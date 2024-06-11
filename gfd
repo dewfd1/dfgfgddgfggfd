@@ -1,0 +1,86 @@
+#include <iostream>
+#include <vector>
+#include <thread>
+#include <algorithm> 
+
+class MergeSort {
+private:
+    void merge(std::vector<int>& arr, int left, int mid, int right) {
+        int n1 = mid - left + 1;
+        int n2 = right - mid;
+
+        std::vector<int> L(n1), R(n2);
+
+        for (int i = 0; i < n1; i++)
+            L[i] = arr[left + i];
+        for (int j = 0; j < n2; j++)
+            R[j] = arr[mid + 1 + j];
+
+        int i = 0, j = 0, k = left;
+        while (i < n1 && j < n2) {
+            if (L[i] <= R[j]) {
+                arr[k] = L[i];
+                i++;
+            }
+            else {
+                arr[k] = R[j];
+                j++;
+            }
+            k++;
+        }
+
+        while (i < n1) {
+            arr[k] = L[i];
+            i++;
+            k++;
+        }
+
+        while (j < n2) {
+            arr[k] = R[j];
+            j++;
+            k++;
+        }
+    }
+
+    void sort(std::vector<int>& arr, int left, int right) {
+        if (left < right) {
+            int mid = left + (right - left) / 2;
+
+            sort(arr, left, mid);
+            sort(arr, mid + 1, right);
+
+            merge(arr, left, mid, right);
+        }
+    }
+
+public:
+    void Sort(std::vector<int>& arr) {
+        sort(arr, 0, arr.size() - 1);
+    }
+};
+
+int main() {
+    const int SIZE = 10; 
+    std::vector<int> array(SIZE); 
+
+    for (int i = 0; i < SIZE; i++) {
+        std::cin >> array[i];
+    }
+
+    MergeSort ms;
+
+    auto mergeSortFunction = [&ms, &array]() {
+        ms.Sort(array);
+        };
+
+    std::thread mergeSortThread(mergeSortFunction);
+
+    mergeSortThread.join();
+
+    for (int i = 0; i < SIZE; i++) {
+        std::cout << array[i] << " ";
+    }
+    std::cout << std::endl;
+
+    return 0;
+}
